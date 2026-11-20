@@ -1,0 +1,11 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}Productos{% endblock %}
+{% block heading %}Productos{% endblock %}
+{% block content %}
+<section class="owner-toolbar">
+  <form method="get" class="owner-search"><input name="q" value="{{ query }}" placeholder="Buscar por producto, marca o SKU"><select name="status"><option value="">Todos</option><option value="visible" {% if status == 'visible' %}selected{% endif %}>Visibles</option><option value="hidden" {% if status == 'hidden' %}selected{% endif %}>Archivados u ocultos</option></select><button class="button secondary">Filtrar</button></form>
+  <a class="button primary" href="{% url 'store:owner_product_create' %}">Agregar producto</a>
+</section>
+<section class="owner-card"><div class="owner-table-wrap"><table class="owner-table product-table"><thead><tr><th>Producto</th><th>Categoría</th><th>Estado</th><th>Variantes</th><th>Stock</th><th>Acciones</th></tr></thead><tbody>{% for product in products %}<tr><td><div class="product-cell">{% if product.primary_image_url %}<img src="{{ product.primary_image_url }}" alt="">{% endif %}<span><strong>{{ product.name }}</strong><small>{{ product.brand }}</small></span></div></td><td>{{ product.category }}</td><td>{% if product.show_in_catalog %}<span class="status-chip success">Visible</span>{% else %}<span class="status-chip muted">Oculto</span>{% endif %}{% if product.authenticity == 'unverified' %}<small class="block-note">Sin verificar</small>{% endif %}</td><td>{{ product.variants.all|length }}</td><td>{{ product.total_stock|default:'—' }}</td><td><div class="table-actions"><a href="{% url 'store:owner_product_edit' product.id %}">Editar</a><a href="{% url 'store:owner_variants' product.id %}">Variantes</a>{% if product.show_in_catalog %}<form method="post" action="{% url 'store:owner_product_archive' product.id %}">{% csrf_token %}<button>Archivar</button></form>{% else %}<form method="post" action="{% url 'store:owner_product_restore' product.id %}">{% csrf_token %}<button>Restaurar</button></form>{% endif %}</div></td></tr>{% empty %}<tr><td colspan="6">No hay productos con esos filtros.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}
+

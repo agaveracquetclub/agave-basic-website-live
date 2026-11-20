@@ -1,0 +1,41 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Panel de dueño{% endblock %} | Agave</title>
+  <link rel="stylesheet" href="{% static 'store/css/site.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/owner.css' %}">
+</head>
+<body class="owner-body">
+  <aside class="owner-sidebar">
+    <a class="owner-brand" href="{% url 'store:owner_dashboard' %}">
+      <img src="{% static 'store/img/agave-logo-horizontal.jpeg' %}" alt="Agave Racquet Club">
+      <span>Panel de dueño</span>
+    </a>
+    <nav aria-label="Panel de dueño">
+      <a class="{% if request.resolver_match.url_name == 'owner_dashboard' %}active{% endif %}" href="{% url 'store:owner_dashboard' %}">Resumen</a>
+      <a class="{% if 'owner_product' in request.resolver_match.url_name or 'owner_variant' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'store:owner_products' %}">Productos</a>
+      <a class="{% if 'owner_stock' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'store:owner_stock' %}">Inventario</a>
+      <a class="{% if request.resolver_match.url_name == 'owner_orders' %}active{% endif %}" href="{% url 'store:owner_orders' %}">Pedidos</a>
+      <a href="{% url 'store:external_sale' %}">Venta externa</a>
+      <a href="{% url 'admin:store_storelocation_changelist' %}">Ubicaciones</a>
+      <a href="{% url 'admin:index' %}">Administración avanzada</a>
+    </nav>
+    <div class="owner-sidebar-bottom">
+      <a href="{% url 'store:home' %}">Ver tienda</a>
+      <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button>Salir</button></form>
+    </div>
+  </aside>
+  <main class="owner-main">
+    <header class="owner-topbar">
+      <div><span class="eyebrow">Agave Racquet Club</span><h1>{% block heading %}Panel de dueño{% endblock %}</h1></div>
+      <div class="owner-user"><span>{{ request.user.get_full_name|default:request.user.username }}</span><small>Propietario</small></div>
+    </header>
+    {% if messages %}<div class="owner-messages" aria-live="polite">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,4 @@
+{% extends 'store/base.html' %}
+{% block title %}Estado del pago | Agave{% endblock %}
+{% block content %}<section class="section container narrow"><div class="empty-state">{% if result == 'success' %}<h1>Recibimos tu pago</h1><p>Mercado Pago notificará la confirmación final y podrás ver el pedido en tu cuenta.</p>{% elif result == 'pending' %}<h1>Pago pendiente</h1><p>Actualizaremos el pedido cuando Mercado Pago confirme el resultado.</p>{% else %}<h1>No se completó el pago</h1><p>Si el pago fue rechazado, el inventario se liberará automáticamente.</p>{% endif %}<a class="button primary" href="{% url 'store:my_orders' %}">Ver mis pedidos</a></div></section>{% endblock %}
+

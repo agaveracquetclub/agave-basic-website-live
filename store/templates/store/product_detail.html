@@ -1,0 +1,28 @@
+{% extends 'store/base.html' %}
+{% block title %}{{ product.name }} | Agave{% endblock %}
+{% block content %}
+<section class="section container product-detail">
+  <div class="gallery">
+    {% with images=product.images.all %}
+      {% if images %}
+        {% with first=images.0 %}<img id="gallery-main" class="gallery-main" src="{{ first.url }}" alt="{{ first.alt_text|default:product.name }}">{% endwith %}
+        {% if images|length > 1 %}<div class="gallery-thumbs" aria-label="Fotografías del producto">{% for image in images %}<button type="button" class="gallery-thumb{% if forloop.first %} active{% endif %}" data-gallery-src="{{ image.url }}" data-gallery-alt="{{ image.alt_text|default:product.name }}"><img src="{{ image.url }}" alt=""></button>{% endfor %}</div>{% endif %}
+      {% else %}<div class="product-image placeholder">AGAVE</div>{% endif %}
+    {% endwith %}
+  </div>
+  <div class="product-info">
+    <p class="product-meta">{{ product.category }} · {{ product.brand }}</p>
+    <h1>{{ product.name }}</h1>
+    <div class="description">{{ product.description|linebreaks }}</div>
+    {% if product.authenticity == 'unverified' %}<p class="authenticity-note">La autenticidad y procedencia comercial de este modelo están pendientes de verificación.</p>{% endif %}
+    <form method="post" action="{% url 'store:add_to_cart' product.slug %}" class="purchase-form">
+      {% csrf_token %}{{ form.non_field_errors }}
+      <label for="{{ form.variant_id.id_for_label }}">Variante</label>{{ form.variant_id.errors }}{{ form.variant_id }}
+      <label for="{{ form.quantity.id_for_label }}">Cantidad</label>{{ form.quantity.errors }}{{ form.quantity }}
+      <button class="button primary full" type="submit">Agregar al carrito</button>
+    </form>
+    {% if product.specifications %}<div class="specs"><h2>Características</h2><dl>{% for key, value in product.specifications.items %}<div><dt>{{ key|title }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl></div>{% endif %}
+  </div>
+</section>
+{% endblock %}
+

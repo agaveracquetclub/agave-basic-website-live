@@ -1,0 +1,8 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}Variantes de {{ product.name }}{% endblock %}
+{% block heading %}Variantes de {{ product.name }}{% endblock %}
+{% block content %}
+<section class="owner-actions"><a class="button primary" href="{% url 'store:owner_variant_create' product.id %}">Agregar variante</a><a class="button secondary" href="{% url 'store:owner_product_edit' product.id %}">Editar producto</a></section>
+<section class="owner-card"><div class="owner-table-wrap"><table class="owner-table"><thead><tr><th>SKU</th><th>Variante</th><th>Precio</th><th>Stock</th><th>Envío</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>{% for variant in product.variants.all %}<tr><td><strong>{{ variant.sku }}</strong></td><td>{{ variant.name|default:'Sin nombre' }}</td><td>${{ variant.current_price|floatformat:2 }}</td><td><span class="stock-pill {% if variant.stock <= variant.low_stock_threshold %}danger{% endif %}">{{ variant.stock }}</span></td><td>{% if variant.has_shipping_dimensions %}Configurado{% else %}<span class="text-warning">Faltan medidas</span>{% endif %}</td><td>{% if variant.active %}<span class="status-chip success">Activa</span>{% else %}<span class="status-chip muted">Archivada</span>{% endif %}</td><td><div class="table-actions"><a href="{% url 'store:owner_variant_edit' variant.id %}">Editar</a><a href="{% url 'store:owner_stock_adjust_variant' variant.id %}">Stock</a><form method="post" action="{% url 'store:owner_variant_toggle' variant.id %}">{% csrf_token %}<button>{% if variant.active %}Archivar{% else %}Activar{% endif %}</button></form></div></td></tr>{% empty %}<tr><td colspan="7">Este producto todavía no tiene variantes.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}
+

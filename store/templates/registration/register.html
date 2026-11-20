@@ -1,0 +1,4 @@
+{% extends 'store/base.html' %}
+{% block title %}Crear cuenta | Agave{% endblock %}
+{% block content %}<section class="section container form-page"><div class="panel"><span class="eyebrow">Tu cuenta Agave</span><h1>Crear cuenta</h1><form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="button primary">Registrarme</button></form></div></section>{% endblock %}
+

@@ -1,0 +1,5 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}{% if variant %}Editar variante{% else %}Nueva variante{% endif %}{% endblock %}
+{% block heading %}{% if variant %}Editar {{ variant.sku }}{% else %}Nueva variante de {{ product.name }}{% endif %}{% endblock %}
+{% block content %}<form method="post" class="owner-form">{% csrf_token %}<section class="owner-card form-section">{{ form.non_field_errors }}<div class="owner-form-grid">{% for field in form %}<div class="field {% if field.name == 'attributes' %}wide{% endif %}">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}</div></section><div class="owner-form-actions"><a class="button secondary" href="{% url 'store:owner_variants' product.id %}">Cancelar</a><button class="button primary">Guardar variante</button>{% if variant %}<a class="button secondary" href="{% url 'store:owner_stock_adjust_variant' variant.id %}">Modificar stock</a>{% endif %}</div></form>{% endblock %}
+

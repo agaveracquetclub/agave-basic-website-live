@@ -1,0 +1,44 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}Resumen{% endblock %}
+{% block heading %}Resumen del negocio{% endblock %}
+{% block content %}
+<section class="owner-actions">
+  <a class="button primary" href="{% url 'store:owner_product_create' %}">Agregar producto</a>
+  <a class="button secondary" href="{% url 'store:owner_stock_adjust' %}">Recibir o ajustar stock</a>
+  <a class="button secondary" href="{% url 'store:external_sale' %}">Registrar venta externa</a>
+</section>
+
+<section class="metric-grid">
+  <article><span>Productos visibles</span><strong>{{ product_count }}</strong><small>{{ variant_count }} variantes activas</small></article>
+  <article><span>Unidades disponibles</span><strong>{{ stock_units }}</strong><small>En todas las variantes activas</small></article>
+  <article><span>Valor de venta del stock</span><strong>${{ inventory_value|floatformat:2 }}</strong><small>Estimado con precios actuales</small></article>
+  <article><span>Ventas de 30 días</span><strong>${{ sales_30d|floatformat:2 }}</strong><small>{{ pending_orders }} pedidos pendientes de pago</small></article>
+</section>
+
+{% if shipping_origin %}
+<section class="owner-notice"><div><strong>Origen actual de los envíos</strong><p>{{ shipping_origin.name }} · {{ shipping_origin.street_address }}, {{ shipping_origin.city }}</p></div><a href="{% url 'admin:store_storelocation_changelist' %}">Modificar ubicación</a></section>
+{% else %}
+<section class="owner-notice warning"><div><strong>No hay origen de envíos configurado</strong><p>Envia.com no podrá cotizar hasta seleccionar uno.</p></div><a href="{% url 'admin:store_storelocation_add' %}">Configurar</a></section>
+{% endif %}
+
+<section class="owner-columns">
+  <article class="owner-card">
+    <div class="owner-card-heading"><div><span class="eyebrow">Atención</span><h2>Stock bajo</h2></div><a href="{% url 'store:owner_stock' %}?low=1">Ver inventario</a></div>
+    <div class="owner-list">
+      {% for variant in low_stock %}<a href="{% url 'store:owner_stock_adjust_variant' variant.id %}"><span><strong>{{ variant.product.name }}</strong><small>{{ variant.sku }}</small></span><b class="stock-pill {% if variant.stock == 0 %}danger{% endif %}">{{ variant.stock }}</b></a>{% empty %}<p class="owner-empty">No hay variantes activas con stock bajo.</p>{% endfor %}
+    </div>
+  </article>
+  <article class="owner-card">
+    <div class="owner-card-heading"><div><span class="eyebrow">Actividad</span><h2>Movimientos recientes</h2></div><a href="{% url 'store:owner_stock' %}">Administrar</a></div>
+    <div class="owner-list compact">
+      {% for adjustment in recent_adjustments %}<div><span><strong>{{ adjustment.variant.sku }}</strong><small>{{ adjustment.get_reason_display }} · {{ adjustment.created_at|date:'d/m H:i' }}</small></span><b class="delta {% if adjustment.delta < 0 %}negative{% endif %}">{{ adjustment.delta|stringformat:'+d' }}</b></div>{% empty %}<p class="owner-empty">Aún no hay movimientos.</p>{% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="owner-card">
+  <div class="owner-card-heading"><div><span class="eyebrow">Operación</span><h2>Pedidos recientes</h2></div><a href="{% url 'store:owner_orders' %}">Ver pedidos</a></div>
+  <div class="owner-table-wrap"><table class="owner-table"><thead><tr><th>Folio</th><th>Cliente</th><th>Estado</th><th>Entrega</th><th>Total</th><th>Fecha</th></tr></thead><tbody>{% for order in recent_orders %}<tr><td><a href="{% url 'admin:store_order_change' order.id %}">{{ order.number }}</a></td><td>{{ order.customer_name }}</td><td><span class="status-chip">{{ order.get_status_display }}</span></td><td>{{ order.get_fulfillment_display }}</td><td>${{ order.total|floatformat:2 }}</td><td>{{ order.created_at|date:'d/m/Y H:i' }}</td></tr>{% empty %}<tr><td colspan="6">Todavía no hay pedidos.</td></tr>{% endfor %}</tbody></table></div>
+</section>
+{% endblock %}
+

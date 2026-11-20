@@ -1,0 +1,4 @@
+{% extends 'store/base.html' %}
+{% block title %}Nueva dirección | Agave{% endblock %}
+{% block content %}<section class="section container form-page"><div class="panel"><h1>Nueva dirección</h1><form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="button primary">Guardar</button></form></div></section>{% endblock %}
+

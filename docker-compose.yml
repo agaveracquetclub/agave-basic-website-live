@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: agave_basic
+      POSTGRES_USER: agave_basic
+      POSTGRES_PASSWORD: change-this-local-password
+    volumes:
+      - agave_basic_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agave_basic -d agave_basic"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    command: sh -c "python manage.py migrate --noinput && gunicorn agave_site.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DEBUG: "True"
+      DJANGO_SECRET_KEY: local-docker-only-change-in-production
+      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost
+      DATABASE_URL: postgresql://agave_basic:change-this-local-password@db:5432/agave_basic
+      DB_SSL_REQUIRE: "False"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  agave_basic_pgdata:
+

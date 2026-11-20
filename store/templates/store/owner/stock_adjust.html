@@ -1,0 +1,5 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}Modificar stock{% endblock %}
+{% block heading %}Recibir o modificar stock{% endblock %}
+{% block content %}<section class="owner-form-narrow"><div class="owner-notice"><div><strong>Todos los cambios quedan registrados</strong><p>Usa “establecer conteo físico” después de contar las unidades reales. Para mercancía nueva, usa “recibir”.</p></div></div><form method="post" class="owner-card owner-form">{% csrf_token %}{{ form.non_field_errors }}{% for field in form %}<div class="field">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}<div class="owner-form-actions"><a class="button secondary" href="{% url 'store:owner_stock' %}">Cancelar</a><button class="button primary">Guardar movimiento</button></div></form></section>{% endblock %}
+

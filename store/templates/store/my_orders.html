@@ -1,0 +1,4 @@
+{% extends 'store/base.html' %}
+{% block title %}Mis pedidos | Agave{% endblock %}
+{% block content %}<section class="page-hero"><div class="container"><h1>Mis pedidos</h1></div></section><section class="section container narrow"><div class="order-list">{% for order in orders %}<article class="panel"><div class="section-heading"><div><span class="eyebrow">{{ order.number }}</span><h2>{{ order.get_status_display }}</h2></div><strong>${{ order.total|floatformat:2 }}</strong></div><ul>{% for item in order.items.all %}<li>{{ item.quantity }} × {{ item.product_name }} {{ item.variant_name }}</li>{% endfor %}</ul><p>{{ order.get_fulfillment_display }} · {{ order.created_at|date:'d/m/Y H:i' }}</p></article>{% empty %}<div class="empty-state">Todavía no tienes pedidos.</div>{% endfor %}</div></section>{% endblock %}
+

@@ -1,0 +1,33 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block title %}Agave Racquet Club{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Equipamiento para tu siguiente partido</span>
+      <h1>Juega con confianza.<br><em>Elige tu equipo.</em></h1>
+      <p>Artículos de tenis, pádel y deportes de raqueta, con recolección en Puebla y Orizaba y envíos a todo México.</p>
+      <div class="button-row"><a class="button primary" href="{% url 'store:catalog' %}">Ver catálogo</a><a class="button secondary" href="#como-comprar">Cómo comprar</a></div>
+    </div>
+    <div class="hero-mark"><img src="{% static 'store/img/agave-brand-variants.jpeg' %}" alt="Identidad Agave Racquet Club"></div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-heading"><div><span class="eyebrow">Selección Agave</span><h2>Productos destacados</h2></div><a href="{% url 'store:catalog' %}">Ver todos</a></div>
+  <div class="product-grid">
+    {% for product in products %}{% include 'store/product_card.html' with product=product %}
+    {% empty %}<div class="empty-state">El catálogo está listo para que agregues inventario desde el panel.</div>{% endfor %}
+  </div>
+</section>
+
+<section id="como-comprar" class="section soft-section">
+  <div class="container steps">
+    <article><span>Elige</span><h3>Elige una variante</h3><p>Selecciona mango, color, talla u otra opción disponible.</p></article>
+    <article><span>Entrega</span><h3>Define la entrega</h3><p>Recoge en una ubicación Agave o cotiza tu envío.</p></article>
+    <article><span>Pago</span><h3>Paga con seguridad</h3><p>Mercado Pago procesa la tarjeta; Agave nunca almacena sus datos sensibles.</p></article>
+  </div>
+</section>
+{% endblock %}
+

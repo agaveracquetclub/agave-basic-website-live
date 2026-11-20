@@ -1,0 +1,11 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}{% if product %}Editar producto{% else %}Nuevo producto{% endif %}{% endblock %}
+{% block heading %}{% if product %}Editar {{ product.name }}{% else %}Agregar producto{% endif %}{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="owner-form">{% csrf_token %}
+  <section class="owner-card form-section"><div class="owner-card-heading"><div><span class="eyebrow">Catálogo</span><h2>Información principal</h2></div></div>{{ form.non_field_errors }}<div class="owner-form-grid">{% for field in form %}<div class="field {% if field.name == 'description' or field.name == 'specifications_json' %}wide{% endif %}">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}</div></section>
+  <section class="owner-card form-section"><div class="owner-card-heading"><div><span class="eyebrow">Visual</span><h2>Imágenes</h2></div></div>{{ image_formset.management_form }}{% for image_form in image_formset %}<div class="owner-form-grid image-row">{% for hidden in image_form.hidden_fields %}{{ hidden }}{% endfor %}{% for field in image_form.visible_fields %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div>{% endfor %}</section>
+  <div class="owner-form-actions"><a class="button secondary" href="{% url 'store:owner_products' %}">Cancelar</a><button class="button primary">Guardar producto</button>{% if product %}<a class="button secondary" href="{% url 'store:owner_variants' product.id %}">Administrar variantes</a>{% endif %}</div>
+</form>
+{% endblock %}
+

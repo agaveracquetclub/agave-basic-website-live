@@ -1,0 +1,24 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block title %}Finalizar compra | Agave{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><h1>Finalizar compra</h1><p>El inventario se protege durante 15 minutos al pasar a Mercado Pago.</p></div></section>
+<section class="section container checkout-grid">
+  <form id="checkout-form" method="post" action="{% url 'store:place_order' %}" class="panel form-stack">
+    {% csrf_token %}{{ form.non_field_errors }}
+    <h2>Entrega</h2>{{ form.fulfillment.errors }}{{ form.fulfillment }}
+    <div id="shipping-fields">
+      <label>Dirección</label>{{ form.address.errors }}{{ form.address }}
+      <div class="shipping-actions"><a href="{% url 'store:address_create' %}">Agregar otra dirección</a><button id="quote-button" class="button secondary" type="button" data-url="{% url 'store:shipping_quotes' %}">Cotizar envío</button></div>
+      <p id="packing-summary" class="packing-summary" aria-live="polite"></p>
+      <div id="shipping-options" aria-live="polite"></div>
+    </div>
+    <div id="pickup-fields"><label>Punto de recolección</label>{{ form.pickup_location.errors }}{{ form.pickup_location }}</div>
+    {{ form.shipping_rate_id }}{{ form.carrier }}{{ form.shipping_service }}{{ form.shipping_amount }}
+    <button class="button primary full" type="submit">Reservar stock y pagar</button>
+  </form>
+  <aside class="panel order-review"><h2>Resumen</h2>{% for item in cart.items.all %}<div><span>{{ item.quantity }} × {{ item.variant.product.name }}</span><strong>${{ item.total|floatformat:2 }}</strong></div>{% endfor %}<div class="total"><span>Subtotal</span><strong>${{ cart.subtotal|floatformat:2 }} MXN</strong></div><p>Los datos de tarjeta se capturan directamente en Mercado Pago.</p></aside>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'store/js/checkout.js' %}" defer></script>{% endblock %}
+

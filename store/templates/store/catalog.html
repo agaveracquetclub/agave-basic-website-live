@@ -1,0 +1,12 @@
+{% extends 'store/base.html' %}
+{% block title %}Catálogo | Agave{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">Encuentra tu equipo</span><h1>Catálogo</h1></div></section>
+<section class="section container">
+  <div class="catalog-layout">
+    <aside class="filters"><h2>Categorías</h2><a class="{% if not selected_category %}active{% endif %}" href="{% url 'store:catalog' %}">Todos</a>{% for category in categories %}<a class="{% if selected_category == category %}active{% endif %}" href="?categoria={{ category|urlencode }}">{{ category }}</a>{% endfor %}</aside>
+    <div class="product-grid">{% for product in products %}{% include 'store/product_card.html' with product=product %}{% empty %}<p>No encontramos productos en esta categoría.</p>{% endfor %}</div>
+  </div>
+</section>
+{% endblock %}
+
