@@ -1,0 +1,9 @@
+backups/
+*.dump
+*.backup
+*.sqlite
+*.sqlite3
+.env
+.env.*
+credentials*
+
