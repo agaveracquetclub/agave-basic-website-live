@@ -4,8 +4,50 @@
 {% block content %}
 <form method="post" enctype="multipart/form-data" class="owner-form">{% csrf_token %}
   <section class="owner-card form-section"><div class="owner-card-heading"><div><span class="eyebrow">Catálogo</span><h2>Información principal</h2></div></div>{{ form.non_field_errors }}<div class="owner-form-grid">{% for field in form %}<div class="field {% if field.name == 'description' or field.name == 'specifications_json' %}wide{% endif %}">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}</div></section>
-  <section class="owner-card form-section"><div class="owner-card-heading"><div><span class="eyebrow">Visual</span><h2>Imágenes</h2></div></div>{{ image_formset.management_form }}{% for image_form in image_formset %}<div class="owner-form-grid image-row">{% for hidden in image_form.hidden_fields %}{{ hidden }}{% endfor %}{% for field in image_form.visible_fields %}<div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div>{% endfor %}</section>
+  <section class="owner-card form-section">
+    <div class="owner-card-heading"><div><span class="eyebrow">Visual</span><h2>Galería de imágenes</h2></div></div>
+    <p class="block-note">La imagen con la posición más baja será la portada en el catálogo y la foto principal del producto. Todas las demás aparecerán como miniaturas dentro del producto.</p>
+    {{ image_formset.management_form }}
+    <div id="image-form-list" data-formset-prefix="{{ image_formset.prefix }}">
+      {% for image_form in image_formset %}
+        <div class="owner-form-grid image-row" data-image-form>
+          {% for hidden in image_form.hidden_fields %}{{ hidden }}{% endfor %}
+          {% if image_form.instance.pk and image_form.instance.url %}<div class="image-preview wide"><img src="{{ image_form.instance.url }}" alt="{{ image_form.instance.alt_text|default:product.name }}"><span>{% if image_form.instance.position == 0 %}Portada actual{% else %}Imagen {{ forloop.counter }}{% endif %}</span></div>{% endif %}
+          {% for field in image_form.visible_fields %}<div class="field {% if field.name == 'DELETE' %}image-delete{% endif %}">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    <template id="empty-image-form">
+      <div class="owner-form-grid image-row" data-image-form>
+        {% with image_form=image_formset.empty_form %}
+          {% for hidden in image_form.hidden_fields %}{{ hidden }}{% endfor %}
+          {% for field in image_form.visible_fields %}<div class="field {% if field.name == 'DELETE' %}image-delete{% endif %}">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}
+        {% endwith %}
+      </div>
+    </template>
+    <button id="add-image-button" class="button secondary" type="button">+ Añadir imagen</button>
+  </section>
   <div class="owner-form-actions"><a class="button secondary" href="{% url 'store:owner_products' %}">Cancelar</a><button class="button primary">Guardar producto</button>{% if product %}<a class="button secondary" href="{% url 'store:owner_variants' product.id %}">Administrar variantes</a>{% endif %}</div>
 </form>
 {% endblock %}
+{% block scripts %}<script>
+(() => {
+  const list = document.querySelector('#image-form-list');
+  const template = document.querySelector('#empty-image-form');
+  const button = document.querySelector('#add-image-button');
+  if (!list || !template || !button) return;
+  const prefix = list.dataset.formsetPrefix;
+  const total = document.querySelector(`#id_${prefix}-TOTAL_FORMS`);
+  button.addEventListener('click', () => {
+    const index = Number(total.value);
+    const html = template.innerHTML.replaceAll('__prefix__', String(index));
+    list.insertAdjacentHTML('beforeend', html);
+    const row = list.lastElementChild;
+    const position = row.querySelector(`[name="${prefix}-${index}-position"]`);
+    if (position) position.value = index;
+    total.value = index + 1;
+    row.querySelector('input[type="file"]')?.focus();
+  });
+})();
+</script>{% endblock %}
 

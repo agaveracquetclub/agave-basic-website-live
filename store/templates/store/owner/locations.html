@@ -1,0 +1,13 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}Ubicaciones{% endblock %}
+{% block heading %}Ubicaciones y recolección{% endblock %}
+{% block content %}
+<section class="owner-actions"><a class="button primary" href="{% url 'store:owner_location_create' %}">Agregar ubicación</a></section>
+<section class="owner-card">
+  <div class="owner-card-heading"><div><span class="eyebrow">Entrega</span><h2>Origen y puntos de recolección</h2></div></div>
+  <div class="owner-table-wrap"><table class="owner-table"><thead><tr><th>Ubicación</th><th>Dirección completa</th><th>Uso</th><th>Estado</th><th></th></tr></thead><tbody>
+    {% for location in locations %}<tr><td><strong>{{ location.name }}</strong>{% if location.opening_hours %}<small class="block-note">{{ location.opening_hours }}</small>{% endif %}</td><td>{{ location.full_address }}</td><td>{% if location.is_shipping_origin %}<span class="status-chip success">Origen de envíos</span>{% endif %} {% if location.pickup_enabled %}<span class="status-chip">Recolección</span>{% endif %}</td><td>{% if location.active %}Activa{% else %}Inactiva{% endif %}</td><td><a href="{% url 'store:owner_location_edit' location.id %}">Editar</a></td></tr>
+    {% empty %}<tr><td colspan="5">No hay ubicaciones configuradas.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

@@ -121,7 +121,7 @@ def _api_packages(packages):
 def quote_shipping(*, cart, address):
     if not settings.ENVIA_API_TOKEN:
         raise ShippingConfigurationError(
-            "Falta configurar el token de Envia.com. Agrega ENVIA_API_TOKEN al archivo .env."
+            "Envia.com todavía no está habilitado. El administrador debe configurar ENVIA_API_TOKEN."
         )
     origin = StoreLocation.objects.filter(active=True, is_shipping_origin=True).first()
     if not origin:
@@ -174,6 +174,10 @@ def quote_shipping(*, cart, address):
         ) from exc
 
     data = response.json()
+    if isinstance(data, dict) and data.get("meta") == "error":
+        error = data.get("error") or {}
+        detail = error.get("message") or error.get("description") or "Error no especificado."
+        raise ShippingConfigurationError(f"Envia.com rechazó la cotización: {detail}")
     options = data.get("data", []) if isinstance(data, dict) else data
     if isinstance(options, dict):
         options = options.get("rates", options.get("services", []))

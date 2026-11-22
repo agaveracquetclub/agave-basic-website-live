@@ -46,6 +46,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "store.context_processors.cart_summary",
+                "store.context_processors.public_contact",
             ],
         },
     },
@@ -114,9 +115,15 @@ MERCADOPAGO_SUCCESS_URL = os.getenv("MERCADOPAGO_SUCCESS_URL", "")
 MERCADOPAGO_FAILURE_URL = os.getenv("MERCADOPAGO_FAILURE_URL", "")
 MERCADOPAGO_PENDING_URL = os.getenv("MERCADOPAGO_PENDING_URL", "")
 ENVIA_API_TOKEN = os.getenv("ENVIA_API_TOKEN", "")
-ENVIA_RATE_URL = os.getenv("ENVIA_RATE_URL", "https://api-test.envia.com/ship/rate/")
-ENVIA_SHIPMENT_URL = os.getenv("ENVIA_SHIPMENT_URL", "https://api-test.envia.com/ship/generate/")
+ENVIA_RATE_URL = os.getenv("ENVIA_RATE_URL", "https://api.envia.com/ship/rate/")
+ENVIA_SHIPMENT_URL = os.getenv("ENVIA_SHIPMENT_URL", "https://api.envia.com/ship/generate/")
 STOCK_HOLD_MINUTES = int(os.getenv("STOCK_HOLD_MINUTES", "15"))
+
+AGAVE_CONTACT_EMAIL = os.getenv("AGAVE_CONTACT_EMAIL", "agaveracquetclub@gmail.com")
+AGAVE_WHATSAPP_URL = os.getenv("AGAVE_WHATSAPP_URL", "")
+AGAVE_FACEBOOK_URL = os.getenv("AGAVE_FACEBOOK_URL", "")
+AGAVE_INSTAGRAM_URL = os.getenv("AGAVE_INSTAGRAM_URL", "")
+AGAVE_GOOGLE_BUSINESS_URL = os.getenv("AGAVE_GOOGLE_BUSINESS_URL", "")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = not DEBUG

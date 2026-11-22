@@ -13,9 +13,16 @@ MERCADO_PAGO_PAYMENT_URL = "https://api.mercadopago.com/v1/payments/{payment_id}
 MERCADO_PAGO_REFUND_URL = "https://api.mercadopago.com/v1/payments/{payment_id}/refunds"
 
 
-def create_checkout_preference(order, webhook_url):
+def create_checkout_preference(order, webhook_url, back_urls=None):
     if not settings.MERCADOPAGO_ACCESS_TOKEN:
         raise ValidationError("Configura MERCADOPAGO_ACCESS_TOKEN.")
+    back_urls = back_urls or {
+        "success": settings.MERCADOPAGO_SUCCESS_URL,
+        "failure": settings.MERCADOPAGO_FAILURE_URL,
+        "pending": settings.MERCADOPAGO_PENDING_URL,
+    }
+    if not all(back_urls.values()):
+        raise ValidationError("Faltan las URL de retorno de Mercado Pago.")
     payload = {
         "external_reference": order.number,
         "items": [
@@ -30,11 +37,7 @@ def create_checkout_preference(order, webhook_url):
         ],
         "payer": {"name": order.customer_name, "email": order.customer_email, "phone": {"number": order.customer_phone}},
         "shipments": {"cost": float(order.shipping_amount), "mode": "not_specified"},
-        "back_urls": {
-            "success": settings.MERCADOPAGO_SUCCESS_URL,
-            "failure": settings.MERCADOPAGO_FAILURE_URL,
-            "pending": settings.MERCADOPAGO_PENDING_URL,
-        },
+        "back_urls": back_urls,
         "auto_return": "approved",
         "notification_url": webhook_url,
         "statement_descriptor": "AGAVE RACQUET",

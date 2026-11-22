@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
 
-from store.forms import AddressForm
-from store.models import Cart, CartItem, Product, Variant
+from store.forms import AddressForm, CheckoutForm
+from store.models import Cart, CartItem, Product, StoreLocation, Variant
 from store.services.shipping import build_packages, package_summary
 
 
@@ -52,4 +52,17 @@ class CatalogAndAddressTests(TestCase):
         call_command("seed_catalog", verbosity=0)
         self.assertEqual(Product.objects.filter(show_in_catalog=True).count(), 7)
         self.assertEqual(Product.objects.filter(category="Palas de pádel", show_in_catalog=True).count(), 4)
-        self.assertEqual(Product.objects.get(slug="raqueta-general-negra-97").images.count(), 7)
+        self.assertEqual(Product.objects.get(slug="raqueta-general-negra-97").images.count(), 13)
+
+    def test_pickup_choices_show_full_address(self):
+        location = StoreLocation.objects.create(
+            name="Puebla — La Paz",
+            street_address="9 Poniente 2709",
+            neighborhood="La Paz",
+            city="Puebla",
+            state="Puebla",
+            postal_code="72160",
+            pickup_enabled=True,
+        )
+        field = CheckoutForm().fields["pickup_location"]
+        self.assertIn("9 Poniente 2709", field.label_from_instance(location))

@@ -5,8 +5,8 @@
   <div class="gallery">
     {% with images=product.images.all %}
       {% if images %}
-        {% with first=images.0 %}<img id="gallery-main" class="gallery-main" src="{{ first.url }}" alt="{{ first.alt_text|default:product.name }}">{% endwith %}
-        {% if images|length > 1 %}<div class="gallery-thumbs" aria-label="Fotografías del producto">{% for image in images %}<button type="button" class="gallery-thumb{% if forloop.first %} active{% endif %}" data-gallery-src="{{ image.url }}" data-gallery-alt="{{ image.alt_text|default:product.name }}"><img src="{{ image.url }}" alt=""></button>{% endfor %}</div>{% endif %}
+        {% with first=images.0 %}<img id="gallery-main" class="gallery-main" src="{{ first.url }}" alt="{{ first.alt_text|default:product.name }}" data-image-fallback>{% endwith %}
+        {% if images|length > 1 %}<div class="gallery-thumbs" aria-label="Fotografías del producto">{% for image in images %}<button type="button" class="gallery-thumb{% if forloop.first %} active{% endif %}" data-gallery-src="{{ image.url }}" data-gallery-alt="{{ image.alt_text|default:product.name }}"><img src="{{ image.url }}" alt="" data-hide-on-error></button>{% endfor %}</div>{% endif %}
       {% else %}<div class="product-image placeholder">AGAVE</div>{% endif %}
     {% endwith %}
   </div>

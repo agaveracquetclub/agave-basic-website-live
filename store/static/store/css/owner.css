@@ -74,6 +74,11 @@
 .field input[type="checkbox"] { width: auto; justify-self: start; }
 .field .errorlist { margin: .2rem 0 0; padding-left: 1.2rem; color: var(--danger); }
 .image-row { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; }
+.image-preview { display: flex; align-items: center; gap: 1rem; grid-column: 1 / -1; padding-bottom: .8rem; border-bottom: 1px solid var(--line); }
+.image-preview img { width: 130px; height: 100px; object-fit: contain; border-radius: 10px; background: var(--mist); }
+.image-preview span { color: var(--agave); font-weight: 800; }
+.image-delete { align-content: end; }
+.image-delete label { color: var(--danger); }
 .owner-form-actions { justify-content: flex-end; }
 .owner-form-narrow { max-width: 720px; }
 

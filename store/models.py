@@ -93,7 +93,14 @@ class StoreLocation(TimeStampedModel):
         ]
 
     def __str__(self):
-        return self.name
+        return f"{self.name} — {self.full_address}"
+
+    @property
+    def full_address(self):
+        locality = ", ".join(part for part in [self.neighborhood, self.city, self.state] if part)
+        postal = f"C.P. {self.postal_code}" if self.postal_code else ""
+        country = "México" if self.country_code == "MX" else self.country_code
+        return ", ".join(part for part in [self.street_address, locality, postal, country] if part)
 
     def envia_address(self):
         return {

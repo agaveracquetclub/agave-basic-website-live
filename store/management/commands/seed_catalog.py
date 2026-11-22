@@ -6,6 +6,10 @@ from django.db import transaction
 from store.models import Product, ProductImage, StoreLocation, Variant
 
 
+def local_gallery(stem, count, extension):
+    return [f"/static/store/img/products/{stem}-{index:02d}.{extension}" for index in range(1, count + 1)]
+
+
 CATALOG = [
     {
         "slug": "raqueta-general-negra-97",
@@ -19,15 +23,7 @@ CATALOG = [
         "variant": "Mango L2 / Negra",
         "price": "5499.00",
         "sale_price": "2999.00",
-        "images": [
-            "/static/store/img/products/raqueta-general-negra-97.jpg",
-            "https://drive.google.com/uc?export=view&id=1SocqxuGf8PUzY_e4Ls6R6lPN0Y4u_QKv",
-            "https://drive.google.com/uc?export=view&id=1CKmJVYsi0qlHn0hKrYrufM1qBZEA-vPW",
-            "https://drive.google.com/uc?export=view&id=1Yl5oLmsxsIqNwYFbcklDHq4SXkLTl9tO",
-            "https://drive.google.com/uc?export=view&id=1pSbZjPMNdDGE0pRnkqtMXofPTW1GiOKJ",
-            "https://drive.google.com/uc?export=view&id=1K_t67a45u0kBX6H1VF-HTpKiUM_p89J3",
-            "https://drive.google.com/uc?export=view&id=1id2_kJHDT5SB4J8Xz1taZm9xHcLsN5I7",
-        ],
+        "images": local_gallery("raqueta-general-negra-97", 13, "jpeg"),
         "publish": True,
         "authenticity": Product.Authenticity.GENERIC,
     },
@@ -43,16 +39,7 @@ CATALOG = [
         "variant": "Mango L2 / Blanca",
         "price": "2599.00",
         "sale_price": "1999.00",
-        "images": [
-            "/static/store/img/products/raqueta-general-blanca-103.jpg",
-            "https://drive.google.com/uc?export=view&id=1bLF9FcxZ8ybiVZ9qw0JpKWJzuLt0-PIe",
-            "https://drive.google.com/uc?export=view&id=1ZaTuf7WMqaYj_GwTZE7dWrhWsC-vXhPx",
-            "https://drive.google.com/uc?export=view&id=1d8sUK_ZEa_tpV3bAYfk9TEInCnf_N_LJ",
-            "https://drive.google.com/uc?export=view&id=1-QnDolCgt-OG0zfCrV0rioyrjlfflOhq",
-            "https://drive.google.com/uc?export=view&id=1XPACldP6IztAlncOdWOgTFar_ovXULp4",
-            "https://drive.google.com/uc?export=view&id=1HBbxeMZtFw-HFg69IQjEmhKVlrYp8uOf",
-            "https://drive.google.com/uc?export=view&id=1ZovENP2S1JfhGCPS1r2KnOubJUAxeEEt",
-        ],
+        "images": local_gallery("raqueta-general-blanca-103", 8, "jpeg"),
         "publish": True,
         "authenticity": Product.Authenticity.GENERIC,
     },
@@ -68,16 +55,7 @@ CATALOG = [
         "variant": "Mango L2 / Azul",
         "price": "4999.00",
         "sale_price": "2999.00",
-        "images": [
-            "/static/store/img/products/raqueta-general-azul-100.jpg",
-            "https://drive.google.com/uc?export=view&id=1QRTsZg6h8cDehsvowichSM6dpYkksld9",
-            "https://drive.google.com/uc?export=view&id=1MEubTxhxYpbdot7g9Bkodzach3R69rET",
-            "https://drive.google.com/uc?export=view&id=14rA4-1GgcCqfDyUe5y8SYoyq9ZASRm8h",
-            "https://drive.google.com/uc?export=view&id=1A9AJ_HaEM88RkylP7F1_ahxtX3thuMu8",
-            "https://drive.google.com/uc?export=view&id=1e-2yAQHakxBHQ5hnFsBU79qEcHsVs9A4",
-            "https://drive.google.com/uc?export=view&id=1oa_ZdSSSitgefXy2L9eAUVkMYhtG1lAu",
-            "https://drive.google.com/uc?export=view&id=1Edjfw9UeJ0LVDqBGg6e_Rook2aE3LQvj",
-        ],
+        "images": local_gallery("raqueta-general-azul-100", 16, "jpeg"),
         "publish": True,
         "authenticity": Product.Authenticity.GENERIC,
     },
@@ -93,11 +71,7 @@ CATALOG = [
         "variant": "Blanco con dorado",
         "price": "6999.00",
         "sale_price": "3499.00",
-        "images": [
-            "/static/store/img/products/nox-at10-12k.jpg",
-            "https://drive.google.com/uc?export=view&id=1y5dKCqCy3rTfDm-46X1cQRSYoDe8Gav0",
-            "https://drive.google.com/uc?export=view&id=1JVa1RFzhT6TSmbXfUpuZb0PenHyO61Sg",
-        ],
+        "images": local_gallery("nox-at10-12k", 3, "png"),
         "publish": True,
         "authenticity": Product.Authenticity.UNVERIFIED,
     },
@@ -113,11 +87,7 @@ CATALOG = [
         "variant": "Negro con dorado",
         "price": "6999.00",
         "sale_price": "3499.00",
-        "images": [
-            "/static/store/img/products/nox-at10-18k.jpg",
-            "https://drive.google.com/uc?export=view&id=1J4hCnlNV85XDkqYFpaAhZjFYvmhZk1UK",
-            "https://drive.google.com/uc?export=view&id=1A93VSX0GHcxdwJj3z3Kvu2kyDpqMAtBL",
-        ],
+        "images": local_gallery("nox-at10-18k", 3, "png"),
         "publish": True,
         "authenticity": Product.Authenticity.UNVERIFIED,
     },
@@ -219,6 +189,11 @@ class Command(BaseCommand):
                     "sale_price": Decimal(row["sale_price"]) if row.get("sale_price") else None,
                 },
             )
+            expected_images = set(row.get("images", []))
+            product.images.filter(external_url__startswith="https://drive.google.com/").delete()
+            product.images.filter(external_url__startswith="/static/store/img/products/").exclude(
+                external_url__in=expected_images
+            ).delete()
             for position, image_url in enumerate(row.get("images", [])):
                 image = ProductImage.objects.filter(product=product, external_url=image_url).first()
                 if image:

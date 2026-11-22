@@ -17,7 +17,9 @@
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menú</button>
       <nav id="main-nav" class="main-nav" aria-label="Navegación principal">
+        <a href="{% url 'store:home' %}">Inicio</a>
         <a href="{% url 'store:catalog' %}">Catálogo</a>
+        <a href="{% url 'store:home' %}#preguntas-frecuentes">Preguntas frecuentes</a>
         {% if user.is_authenticated %}
           <a href="{% url 'store:my_orders' %}">Mis pedidos</a>
           {% if user.is_superuser %}<a href="{% url 'store:owner_dashboard' %}">Panel de dueño</a>{% elif user.is_staff %}<a href="{% url 'store:external_sale' %}">Venta externa</a>{% endif %}
@@ -42,8 +44,9 @@
   <footer class="site-footer">
     <div class="container footer-grid">
       <div><strong>Agave Racquet Club</strong><p>Tenis · Pádel · Pickleball</p></div>
-      <div><strong>Recolección</strong><p>Puebla y Orizaba</p></div>
-      <div><strong>Envíos</strong><p>Cotización calculada al finalizar la compra.</p></div>
+      <div><strong>Atención a clientes</strong><p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>{% if whatsapp_url %}<p><a href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp Business</a></p>{% endif %}</div>
+      <div><strong>Síguenos</strong><div class="social-links">{% if facebook_url %}<a href="{{ facebook_url }}" target="_blank" rel="noopener">Facebook</a>{% endif %}{% if instagram_url %}<a href="{{ instagram_url }}" target="_blank" rel="noopener">Instagram</a>{% endif %}{% if google_business_url %}<a href="{{ google_business_url }}" target="_blank" rel="noopener">Google</a>{% endif %}{% if not facebook_url and not instagram_url and not google_business_url %}<span>Próximamente</span>{% endif %}</div></div>
+      <div><strong>Información</strong><p><a href="{% url 'store:home' %}#preguntas-frecuentes">Preguntas frecuentes</a></p><p>Recolección en Puebla y Orizaba.</p></div>
     </div>
   </footer>
   <script src="{% static 'store/js/site.js' %}" defer></script>

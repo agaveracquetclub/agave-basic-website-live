@@ -10,7 +10,13 @@ from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import OwnerProductForm, OwnerProductImageFormSet, OwnerVariantForm, StockAdjustmentForm
+from .forms import (
+    OwnerProductForm,
+    OwnerProductImageFormSet,
+    OwnerStoreLocationForm,
+    OwnerVariantForm,
+    StockAdjustmentForm,
+)
 from .models import InventoryAdjustment, Order, Product, StoreLocation, Variant
 from .services.inventory import adjust_variant_stock
 from django.utils import timezone
@@ -83,6 +89,41 @@ def product_create(request):
 @owner_required
 def product_edit(request, pk):
     return _product_form(request, get_object_or_404(Product, pk=pk))
+
+
+@owner_required
+def locations(request):
+    queryset = StoreLocation.objects.order_by("-is_shipping_origin", "-pickup_enabled", "name")
+    return render(request, "store/owner/locations.html", {"locations": queryset})
+
+
+def _location_form(request, instance=None):
+    location = instance or StoreLocation(country_code="MX", active=True)
+    form = OwnerStoreLocationForm(request.POST or None, instance=location)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            if form.cleaned_data.get("is_shipping_origin"):
+                StoreLocation.objects.filter(is_shipping_origin=True).exclude(pk=location.pk).update(
+                    is_shipping_origin=False
+                )
+            location = form.save()
+        messages.success(request, f"Ubicación {location.name} guardada.")
+        return redirect("store:owner_locations")
+    return render(
+        request,
+        "store/owner/location_form.html",
+        {"form": form, "location": instance},
+    )
+
+
+@owner_required
+def location_create(request):
+    return _location_form(request)
+
+
+@owner_required
+def location_edit(request, pk):
+    return _location_form(request, get_object_or_404(StoreLocation, pk=pk))
 
 
 @owner_required

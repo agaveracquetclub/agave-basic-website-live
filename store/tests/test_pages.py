@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
 from store.models import Product, Variant
 
@@ -22,4 +23,11 @@ class PublicPageTests(TestCase):
     def test_product_detail_renders_variant(self):
         response = self.client.get(self.product.get_absolute_url())
         self.assertContains(response, "GEN-1")
+
+    def test_logged_in_customer_can_return_home(self):
+        user = get_user_model().objects.create_user("visitante", password="test-password")
+        self.client.force_login(user)
+        response = self.client.get(reverse("store:home"))
+        self.assertContains(response, "Inicio")
+        self.assertContains(response, "Preguntas frecuentes")
 

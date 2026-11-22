@@ -23,7 +23,35 @@ services:
         value: "True"
       - key: MERCADOPAGO_ACCESS_TOKEN
         sync: false
+      - key: MERCADOPAGO_PUBLIC_KEY
+        sync: false
       - key: MERCADOPAGO_WEBHOOK_SECRET
         sync: false
       - key: ENVIA_API_TOKEN
+        sync: false
+      - key: ENVIA_RATE_URL
+        value: https://api.envia.com/ship/rate/
+      - key: ENVIA_SHIPMENT_URL
+        value: https://api.envia.com/ship/generate/
+      - key: SUPABASE_S3_ENDPOINT
+        sync: false
+      - key: SUPABASE_S3_ACCESS_KEY
+        sync: false
+      - key: SUPABASE_S3_SECRET_KEY
+        sync: false
+      - key: SUPABASE_S3_BUCKET
+        value: agave-products
+      - key: SUPABASE_S3_REGION
+        value: us-east-1
+      - key: SUPABASE_STORAGE_PUBLIC_DOMAIN
+        sync: false
+      - key: AGAVE_CONTACT_EMAIL
+        value: agaveracquetclub@gmail.com
+      - key: AGAVE_WHATSAPP_URL
+        sync: false
+      - key: AGAVE_FACEBOOK_URL
+        sync: false
+      - key: AGAVE_INSTAGRAM_URL
+        sync: false
+      - key: AGAVE_GOOGLE_BUSINESS_URL
         sync: false

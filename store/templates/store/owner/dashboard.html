@@ -16,9 +16,9 @@
 </section>
 
 {% if shipping_origin %}
-<section class="owner-notice"><div><strong>Origen actual de los envíos</strong><p>{{ shipping_origin.name }} · {{ shipping_origin.street_address }}, {{ shipping_origin.city }}</p></div><a href="{% url 'admin:store_storelocation_changelist' %}">Modificar ubicación</a></section>
+<section class="owner-notice"><div><strong>Origen actual de los envíos</strong><p>{{ shipping_origin.name }} · {{ shipping_origin.full_address }}</p></div><a href="{% url 'store:owner_location_edit' shipping_origin.id %}">Modificar ubicación</a></section>
 {% else %}
-<section class="owner-notice warning"><div><strong>No hay origen de envíos configurado</strong><p>Envia.com no podrá cotizar hasta seleccionar uno.</p></div><a href="{% url 'admin:store_storelocation_add' %}">Configurar</a></section>
+<section class="owner-notice warning"><div><strong>No hay origen de envíos configurado</strong><p>Envia.com no podrá cotizar hasta seleccionar uno.</p></div><a href="{% url 'store:owner_location_create' %}">Configurar</a></section>
 {% endif %}
 
 <section class="owner-columns">

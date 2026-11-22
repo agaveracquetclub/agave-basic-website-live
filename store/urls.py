@@ -38,5 +38,8 @@ urlpatterns = [
     path("dueno/inventario/ajustar/", owner_views.stock_adjust, name="owner_stock_adjust"),
     path("dueno/inventario/ajustar/<int:variant_pk>/", owner_views.stock_adjust, name="owner_stock_adjust_variant"),
     path("dueno/pedidos/", owner_views.orders, name="owner_orders"),
+    path("dueno/ubicaciones/", owner_views.locations, name="owner_locations"),
+    path("dueno/ubicaciones/nueva/", owner_views.location_create, name="owner_location_create"),
+    path("dueno/ubicaciones/<int:pk>/editar/", owner_views.location_edit, name="owner_location_edit"),
 ]
 

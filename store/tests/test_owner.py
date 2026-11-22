@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from store.models import InventoryAdjustment, Product, Variant
+from store.models import InventoryAdjustment, Product, StoreLocation, Variant
 
 
 class OwnerInterfaceTests(TestCase):
@@ -61,4 +61,29 @@ class OwnerInterfaceTests(TestCase):
         movement = InventoryAdjustment.objects.get(reference="RECEPCION-TEST")
         self.assertEqual(movement.delta, 6)
         self.assertEqual(movement.created_by, self.owner)
+
+    def test_owner_can_manage_pickup_location_with_full_address(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            reverse("store:owner_location_create"),
+            {
+                "name": "Orizaba — Centro / La Concordia",
+                "street_address": "Oriente 5 esquina con Norte 28 #1500",
+                "neighborhood": "Centro / La Concordia",
+                "city": "Orizaba",
+                "state": "Veracruz",
+                "postal_code": "94300",
+                "country_code": "MX",
+                "contact_name": "Agave Racquet Club",
+                "contact_email": "agaveracquetclub@gmail.com",
+                "phone": "2720000000",
+                "opening_hours": "Con cita",
+                "pickup_enabled": "on",
+                "active": "on",
+            },
+        )
+        self.assertRedirects(response, reverse("store:owner_locations"))
+        location = StoreLocation.objects.get(name__startswith="Orizaba")
+        self.assertIn("Oriente 5", location.full_address)
+        self.assertIn("94300", location.full_address)
 

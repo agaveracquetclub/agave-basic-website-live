@@ -197,7 +197,15 @@ def place_order(request):
             shipping_rate=shipping_rate,
         )
         webhook_url = request.build_absolute_uri(reverse("store:mercadopago_webhook"))
-        preference = create_checkout_preference(order, webhook_url)
+        preference = create_checkout_preference(
+            order,
+            webhook_url,
+            back_urls={
+                "success": request.build_absolute_uri(reverse("store:payment_success")),
+                "failure": request.build_absolute_uri(reverse("store:payment_failure")),
+                "pending": request.build_absolute_uri(reverse("store:payment_pending")),
+            },
+        )
     except ValidationError as exc:
         messages.error(request, "; ".join(exc.messages))
         return redirect("store:cart")

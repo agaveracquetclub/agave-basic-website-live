@@ -116,6 +116,7 @@ input:focus, select:focus, textarea:focus { outline: 3px solid rgba(215,241,47,.
 .shipping-option input { width: auto; }
 .shipping-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-top: .25rem; }
 .packing-summary { margin: .35rem 0 0; color: var(--muted); font-size: .9rem; }
+.field-help { margin: .45rem 0 0; color: var(--muted); font-size: .88rem; }
 #id_fulfillment { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; padding: 0; margin: 0; list-style: none; }
 #id_fulfillment li { margin: 0; }
 #id_fulfillment label { min-height: 54px; display: flex; align-items: center; gap: .7rem; padding: .8rem 1rem; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
@@ -126,8 +127,15 @@ input:focus, select:focus, textarea:focus { outline: 3px solid rgba(215,241,47,.
 .message { padding: .9rem 1.1rem; margin-bottom: .5rem; border-radius: 10px; background: var(--agave); color: white; box-shadow: var(--shadow); }
 .message.error { background: var(--danger); }
 .site-footer { padding-block: 3.5rem; background: var(--agave-dark); color: white; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1.2fr 1fr 1fr; gap: 2rem; }
 .footer-grid p { color: #c8d8d2; }
+.footer-grid a { color: #eaf4ef; text-decoration: underline; text-underline-offset: 3px; }
+.social-links { display: grid; gap: .35rem; margin-top: .5rem; }
+.social-links span { color: #c8d8d2; }
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.faq-grid details { padding: 1.2rem 1.3rem; border: 1px solid var(--line); border-radius: 14px; background: var(--mist); }
+.faq-grid summary { cursor: pointer; color: var(--agave-dark); font-weight: 800; }
+.faq-grid details p { margin: .9rem 0 0; color: var(--muted); }
 [hidden] { display: none !important; }
 
 @media (max-width: 900px) {
@@ -141,6 +149,7 @@ input:focus, select:focus, textarea:focus { outline: 3px solid rgba(215,241,47,.
   .catalog-layout { grid-template-columns: 1fr; }
   .filters { flex-direction: row; flex-wrap: wrap; }
   .steps { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
   .order-review { position: static; }
 }
 
@@ -155,6 +164,6 @@ input:focus, select:focus, textarea:focus { outline: 3px solid rgba(215,241,47,.
   .cart-item { grid-template-columns: 1fr; }
   .gallery-main { min-height: 280px; height: 82vw; }
   #id_fulfillment { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
+  .footer-grid, .faq-grid { grid-template-columns: 1fr; }
 }
 

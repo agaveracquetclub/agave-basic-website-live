@@ -13,7 +13,7 @@
       <p id="packing-summary" class="packing-summary" aria-live="polite"></p>
       <div id="shipping-options" aria-live="polite"></div>
     </div>
-    <div id="pickup-fields"><label>Punto de recolección</label>{{ form.pickup_location.errors }}{{ form.pickup_location }}</div>
+    <div id="pickup-fields"><label>Punto de recolección</label>{{ form.pickup_location.errors }}{{ form.pickup_location }}<p class="field-help">La lista muestra la dirección completa de cada punto activo.</p></div>
     {{ form.shipping_rate_id }}{{ form.carrier }}{{ form.shipping_service }}{{ form.shipping_amount }}
     <button class="button primary full" type="submit">Reservar stock y pagar</button>
   </form>

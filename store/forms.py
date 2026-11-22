@@ -6,6 +6,11 @@ from django.forms import formset_factory, inlineformset_factory
 from .models import Address, InventoryAdjustment, Order, Product, ProductImage, StoreLocation, Variant
 
 
+class StoreLocationChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, location):
+        return f"{location.name} — {location.full_address}"
+
+
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(label="Nombre", max_length=150)
@@ -61,7 +66,7 @@ class AddressForm(forms.ModelForm):
 class CheckoutForm(forms.Form):
     fulfillment = forms.ChoiceField(choices=Order.Fulfillment.choices, widget=forms.RadioSelect)
     address = forms.ModelChoiceField(queryset=Address.objects.none(), required=False)
-    pickup_location = forms.ModelChoiceField(queryset=StoreLocation.objects.none(), required=False)
+    pickup_location = StoreLocationChoiceField(queryset=StoreLocation.objects.none(), required=False)
     shipping_rate_id = forms.CharField(required=False, widget=forms.HiddenInput)
     carrier = forms.CharField(required=False, widget=forms.HiddenInput)
     shipping_service = forms.CharField(required=False, widget=forms.HiddenInput)
@@ -149,9 +154,29 @@ OwnerProductImageFormSet = inlineformset_factory(
     Product,
     ProductImage,
     form=OwnerProductImageForm,
-    extra=1,
-    can_delete=False,
+    extra=0,
+    can_delete=True,
 )
+
+
+class OwnerStoreLocationForm(forms.ModelForm):
+    class Meta:
+        model = StoreLocation
+        fields = (
+            "name", "street_address", "neighborhood", "city", "state", "postal_code",
+            "country_code", "contact_name", "contact_email", "phone", "opening_hours",
+            "is_shipping_origin", "pickup_enabled", "active",
+        )
+        widgets = {"country_code": forms.Select(choices=[("MX", "México")])}
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("is_shipping_origin"):
+            if not cleaned.get("postal_code"):
+                self.add_error("postal_code", "Envia.com requiere el código postal del origen.")
+            if not cleaned.get("phone"):
+                self.add_error("phone", "Envia.com requiere un teléfono del origen.")
+        return cleaned
 
 
 class OwnerVariantForm(forms.ModelForm):
