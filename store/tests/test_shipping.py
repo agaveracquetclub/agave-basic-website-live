@@ -48,11 +48,31 @@ class CatalogAndAddressTests(TestCase):
     def test_address_country_is_temporarily_mexico_only(self):
         self.assertEqual(AddressForm().fields["country_code"].choices, [("MX", "México")])
 
-    def test_seed_publishes_all_padel_products_and_adds_gallery_images(self):
+    def test_seed_uses_verified_catalog_image_counts(self):
         call_command("seed_catalog", verbosity=0)
         self.assertEqual(Product.objects.filter(show_in_catalog=True).count(), 7)
         self.assertEqual(Product.objects.filter(category="Palas de pádel", show_in_catalog=True).count(), 4)
-        self.assertEqual(Product.objects.get(slug="raqueta-general-negra-97").images.count(), 13)
+        for slug in [
+            "raqueta-general-negra-97",
+            "raqueta-general-blanca-103",
+            "raqueta-general-azul-100",
+        ]:
+            self.assertEqual(Product.objects.get(slug=slug).images.count(), 8)
+        for slug in [
+            "babolat-viper-3k-azul-2026",
+            "babolat-viper-3k-naranja-2026",
+        ]:
+            self.assertEqual(Product.objects.get(slug=slug).images.count(), 14)
+        for slug in [
+            "nox-at10-luxury-genius-12k-2026",
+            "nox-at10-luxury-genius-18k-2026",
+        ]:
+            self.assertEqual(Product.objects.get(slug=slug).images.count(), 0)
+
+        white = Product.objects.get(slug="raqueta-general-blanca-103")
+        self.assertEqual(white.name, "Wilson Pro Staff Precision Team 103")
+        self.assertEqual(white.brand, "WILSON")
+        self.assertEqual(white.authenticity, Product.Authenticity.VERIFIED)
 
     def test_pickup_choices_show_full_address(self):
         location = StoreLocation.objects.create(

@@ -1,3 +1,4 @@
+import os
 from decimal import Decimal
 
 from django.core.management.base import BaseCommand
@@ -6,8 +7,14 @@ from django.db import transaction
 from store.models import Product, ProductImage, StoreLocation, Variant
 
 
-def local_gallery(stem, count, extension):
-    return [f"/static/store/img/products/{stem}-{index:02d}.{extension}" for index in range(1, count + 1)]
+PRODUCT_IMAGE_BASE_URL = os.getenv(
+    "SUPABASE_PRODUCT_IMAGE_BASE_URL",
+    "https://lhzpojsvadkbvicdwnun.supabase.co/storage/v1/object/public/agave-products/catalog",
+).rstrip("/")
+
+
+def storage_gallery(stem, count, extension):
+    return [f"{PRODUCT_IMAGE_BASE_URL}/{stem}-{index:02d}.{extension}" for index in range(1, count + 1)]
 
 
 CATALOG = [
@@ -22,28 +29,28 @@ CATALOG = [
         "specifications": {"peso_g": 315, "cabeza_in2": 97, "mango": "L2 (4 1/4)", "color": "Negro", "patron": "16x19", "balance_mm": 310},
         "sku": "TEN-GEN-NEGRA-97-L2",
         "variant": "Mango L2 / Negra",
-        "price": "5499.00",
+        "price": "3999.00",
         "sale_price": "2999.00",
-        "images": local_gallery("raqueta-general-negra-97", 13, "jpeg"),
+        "images": storage_gallery("raqueta-general-negra-97", 8, "jpeg"),
         "publish": True,
         "authenticity": Product.Authenticity.GENERIC,
     },
     {
         "slug": "raqueta-general-blanca-103",
-        "name": "Raqueta Profesional Blanca 103",
-        "reference_model_name": "Wilson Pro Staff Precision Team 103",
-        "brand": "Agave / Genérica",
+        "name": "Wilson Pro Staff Precision Team 103",
+        "reference_model_name": "",
+        "brand": "WILSON",
         "category": "Raquetas de tenis",
         "sports": ["tenis"],
-        "description": "Raqueta profesional blanca con cabeza amplia, pensada para comodidad y facilidad de juego. Producto genérico; no se comercializa como artículo oficial de otra marca.",
+        "description": "Raqueta Wilson Pro Staff Precision Team 103 original, con cabeza de 103 in² y patrón de encordado 16x19. Su cabeza amplia favorece la comodidad y la facilidad de juego.",
         "specifications": {"peso_g": 299, "cabeza_in2": 103, "mango": "L2 (4 1/4)", "color": "Blanco", "patron": "16x19", "balance_mm": 330},
         "sku": "TEN-GEN-BLANCA-103-L2",
         "variant": "Mango L2 / Blanca",
-        "price": "2599.00",
-        "sale_price": "1999.00",
-        "images": local_gallery("raqueta-general-blanca-103", 8, "jpeg"),
+        "price": "3999.00",
+        "sale_price": "2999.00",
+        "images": storage_gallery("raqueta-general-blanca-103", 8, "jpeg"),
         "publish": True,
-        "authenticity": Product.Authenticity.GENERIC,
+        "authenticity": Product.Authenticity.VERIFIED,
     },
     {
         "slug": "raqueta-general-azul-100",
@@ -56,9 +63,9 @@ CATALOG = [
         "specifications": {"peso_g": 300, "cabeza_in2": 100, "mango": "L2 (4 1/4)", "color": "Azul", "patron": "16x19", "balance_mm": 320},
         "sku": "TEN-GEN-AZUL-100-L2",
         "variant": "Mango L2 / Azul",
-        "price": "4999.00",
+        "price": "3999.00",
         "sale_price": "2999.00",
-        "images": local_gallery("raqueta-general-azul-100", 16, "jpeg"),
+        "images": storage_gallery("raqueta-general-azul-100", 8, "jpeg"),
         "publish": True,
         "authenticity": Product.Authenticity.GENERIC,
     },
@@ -74,7 +81,7 @@ CATALOG = [
         "variant": "Blanco con dorado",
         "price": "6999.00",
         "sale_price": "3499.00",
-        "images": local_gallery("nox-at10-12k", 3, "png"),
+        "images": [],
         "publish": True,
         "authenticity": Product.Authenticity.UNVERIFIED,
     },
@@ -90,7 +97,7 @@ CATALOG = [
         "variant": "Negro con dorado",
         "price": "6999.00",
         "sale_price": "3499.00",
-        "images": local_gallery("nox-at10-18k", 3, "png"),
+        "images": [],
         "publish": True,
         "authenticity": Product.Authenticity.UNVERIFIED,
     },
@@ -106,7 +113,7 @@ CATALOG = [
         "variant": "Azul con verde",
         "price": "6999.00",
         "sale_price": "3499.00",
-        "images": local_gallery("babolat-viper-azul", 14, "jpg"),
+        "images": storage_gallery("babolat-viper-azul", 14, "jpg"),
         "publish": True,
         "authenticity": Product.Authenticity.UNVERIFIED,
     },
@@ -122,7 +129,7 @@ CATALOG = [
         "variant": "Naranja",
         "price": "6999.00",
         "sale_price": "3499.00",
-        "images": local_gallery("babolat-viper-naranja", 14, "jpg"),
+        "images": storage_gallery("babolat-viper-naranja", 14, "jpg"),
         "publish": True,
         "authenticity": Product.Authenticity.UNVERIFIED,
     },
@@ -197,10 +204,7 @@ class Command(BaseCommand):
                 },
             )
             expected_images = set(row.get("images", []))
-            product.images.filter(external_url__startswith="https://drive.google.com/").delete()
-            product.images.filter(external_url__startswith="/static/store/img/products/").exclude(
-                external_url__in=expected_images
-            ).delete()
+            product.images.exclude(external_url__in=expected_images).delete()
             for position, image_url in enumerate(row.get("images", [])):
                 image = ProductImage.objects.filter(product=product, external_url=image_url).first()
                 if image:
