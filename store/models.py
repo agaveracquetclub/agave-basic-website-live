@@ -127,6 +127,10 @@ class Product(TimeStampedModel):
     name = models.CharField("nombre", max_length=180)
     slug = models.SlugField(unique=True, max_length=200)
     brand = models.CharField("marca", max_length=100, default="Agave / Genérica")
+    reference_model_name = models.CharField(
+        "modelo de referencia interno", max_length=180, blank=True,
+        help_text="Solo para control interno. No se muestra al cliente ni sustituye el nombre comercial.",
+    )
     description = models.TextField("descripción", blank=True)
     category = models.CharField("categoría", max_length=100)
     sports = models.JSONField("deportes", default=list, blank=True)

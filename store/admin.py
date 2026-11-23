@@ -40,13 +40,13 @@ class VariantInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("name", "brand", "category", "authenticity", "show_in_catalog", "featured", "updated_at")
     list_filter = ("category", "authenticity", "show_in_catalog", "featured")
-    search_fields = ("name", "brand", "variants__sku")
+    search_fields = ("name", "brand", "reference_model_name", "variants__sku")
     prepopulated_fields = {"slug": ("name",)}
     inlines = (ProductImageInline, VariantInline)
     actions = ("publish_verified", "hide_products")
     fieldsets = (
-        ("Producto", {"fields": ("name", "slug", "brand", "description", "category", "sports", "specifications")} ),
-        ("Publicación", {"fields": ("authenticity", "show_in_catalog", "featured")} ),
+        ("Producto", {"fields": ("name", "slug", "brand", "reference_model_name", "description", "category", "sports", "specifications")} ),
+        ("Publicación", {"fields": ("authenticity", "show_in_catalog", "featured", "discount_percent")} ),
         ("Empaque para Envia.com", {"fields": (
             "package_weight_kg", "package_length_cm", "package_width_cm",
             "package_height_cm", "units_per_package",

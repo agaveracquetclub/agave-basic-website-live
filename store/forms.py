@@ -123,7 +123,7 @@ class OwnerProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = (
-            "name", "slug", "brand", "description", "category", "authenticity",
+            "name", "slug", "brand", "reference_model_name", "description", "category", "authenticity",
             "show_in_catalog", "featured", "discount_percent", "package_weight_kg", "package_length_cm",
             "package_width_cm", "package_height_cm", "units_per_package",
         )
