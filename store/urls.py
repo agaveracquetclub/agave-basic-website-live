@@ -41,5 +41,6 @@ urlpatterns = [
     path("dueno/ubicaciones/", owner_views.locations, name="owner_locations"),
     path("dueno/ubicaciones/nueva/", owner_views.location_create, name="owner_location_create"),
     path("dueno/ubicaciones/<int:pk>/editar/", owner_views.location_edit, name="owner_location_edit"),
+    path("dueno/promociones/", owner_views.promotions, name="owner_promotions"),
 ]
 

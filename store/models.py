@@ -2,6 +2,7 @@ import uuid
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -135,6 +136,12 @@ class Product(TimeStampedModel):
     )
     show_in_catalog = models.BooleanField("visible en catálogo", default=False)
     featured = models.BooleanField("destacado", default=False)
+    discount_percent = models.DecimalField(
+        "descuento del producto (%)", max_digits=5, decimal_places=2,
+        null=True, blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text="Opcional. Se compara con otras promociones; los descuentos no se acumulan.",
+    )
     package_weight_kg = models.DecimalField(
         "peso de envío por unidad (kg)", max_digits=8, decimal_places=3,
         null=True, blank=True, validators=[MinValueValidator(Decimal("0.001"))],
@@ -253,13 +260,74 @@ class Variant(TimeStampedModel):
 
     @property
     def current_price(self):
-        return self.sale_price if self.sale_price is not None else self.price
+        candidates = [self.price]
+        if self.sale_price is not None:
+            candidates.append(self.sale_price)
+        if self.product.discount_percent:
+            candidates.append(
+                (self.price * (Decimal("100") - self.product.discount_percent) / Decimal("100")).quantize(Decimal("0.01"))
+            )
+        global_discount = StoreSettings.current_global_discount()
+        if global_discount:
+            candidates.append(
+                (self.price * (Decimal("100") - global_discount) / Decimal("100")).quantize(Decimal("0.01"))
+            )
+        return min(candidates)
 
     @property
     def has_shipping_dimensions(self):
         return self.product.has_shipping_dimensions or all([
             self.weight_kg, self.length_cm, self.width_cm, self.height_cm,
         ])
+
+
+class StoreSettings(TimeStampedModel):
+    CACHE_KEY = "agave_global_discount_percent"
+    global_discount_percent = models.DecimalField(
+        "descuento global (%)", max_digits=5, decimal_places=2,
+        null=True, blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text="Se aplica a toda la tienda. No se acumula con otras ofertas; siempre gana el menor precio.",
+    )
+    promotion_name = models.CharField("nombre de la promoción", max_length=120, blank=True)
+    promotion_active = models.BooleanField("promoción activa", default=False)
+
+    class Meta:
+        verbose_name = "configuración de la tienda"
+        verbose_name_plural = "configuración de la tienda"
+
+    def clean(self):
+        if self.global_discount_percent is not None and self.global_discount_percent > 100:
+            raise ValidationError({"global_discount_percent": "El descuento no puede superar 100%."})
+
+    @classmethod
+    def get_solo(cls):
+        settings_obj, _ = cls.objects.get_or_create(pk=1)
+        return settings_obj
+
+    @classmethod
+    def current_global_discount(cls):
+        sentinel = object()
+        value = cache.get(cls.CACHE_KEY, sentinel)
+        if value is sentinel:
+            value = cls.objects.filter(pk=1, promotion_active=True).values_list(
+                "global_discount_percent", flat=True
+            ).first()
+            cache.set(cls.CACHE_KEY, value, 300)
+        return value
+
+    def save(self, *args, **kwargs):
+        result = super().save(*args, **kwargs)
+        cache.delete(self.CACHE_KEY)
+        return result
+
+    def delete(self, *args, **kwargs):
+        result = super().delete(*args, **kwargs)
+        cache.delete(self.CACHE_KEY)
+        return result
+
+    def __str__(self):
+        return "Configuración general de Agave"
 
 
 class InventoryAdjustment(models.Model):

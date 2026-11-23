@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import formset_factory, inlineformset_factory
 
-from .models import Address, InventoryAdjustment, Order, Product, ProductImage, StoreLocation, Variant
+from .models import Address, InventoryAdjustment, Order, Product, ProductImage, StoreLocation, StoreSettings, Variant
 
 
 class StoreLocationChoiceField(forms.ModelChoiceField):
@@ -124,7 +124,7 @@ class OwnerProductForm(forms.ModelForm):
         model = Product
         fields = (
             "name", "slug", "brand", "description", "category", "authenticity",
-            "show_in_catalog", "featured", "package_weight_kg", "package_length_cm",
+            "show_in_catalog", "featured", "discount_percent", "package_weight_kg", "package_length_cm",
             "package_width_cm", "package_height_cm", "units_per_package",
         )
         widgets = {"description": forms.Textarea(attrs={"rows": 7})}
@@ -142,6 +142,12 @@ class OwnerProductForm(forms.ModelForm):
         if commit:
             product.save()
         return product
+
+    def clean_discount_percent(self):
+        value = self.cleaned_data.get("discount_percent")
+        if value is not None and value > 100:
+            raise forms.ValidationError("El descuento no puede superar 100%.")
+        return value
 
 
 class OwnerProductImageForm(forms.ModelForm):
@@ -187,6 +193,18 @@ class OwnerVariantForm(forms.ModelForm):
             "active",
         )
         widgets = {"attributes": forms.Textarea(attrs={"rows": 5})}
+
+
+class OwnerStoreSettingsForm(forms.ModelForm):
+    class Meta:
+        model = StoreSettings
+        fields = ("promotion_active", "promotion_name", "global_discount_percent")
+
+    def clean_global_discount_percent(self):
+        value = self.cleaned_data.get("global_discount_percent")
+        if value is not None and value > 100:
+            raise forms.ValidationError("El descuento no puede superar 100%.")
+        return value
 
 
 class StockAdjustmentForm(forms.Form):

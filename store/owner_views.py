@@ -14,10 +14,11 @@ from .forms import (
     OwnerProductForm,
     OwnerProductImageFormSet,
     OwnerStoreLocationForm,
+    OwnerStoreSettingsForm,
     OwnerVariantForm,
     StockAdjustmentForm,
 )
-from .models import InventoryAdjustment, Order, Product, StoreLocation, Variant
+from .models import InventoryAdjustment, Order, Product, StoreLocation, StoreSettings, Variant
 from .services.inventory import adjust_variant_stock
 from django.utils import timezone
 
@@ -35,12 +36,13 @@ def dashboard(request):
         status__in=paid_statuses,
         created_at__gte=timezone.now() - timedelta(days=30),
     ).aggregate(value=Coalesce(Sum("total"), Decimal("0"), output_field=DecimalField()))["value"]
-    variants = Variant.objects.filter(active=True)
+    variants = Variant.objects.filter(active=True).select_related("product")
+    inventory_value = sum((variant.current_price * variant.stock for variant in variants), Decimal("0"))
     context = {
         "product_count": Product.objects.filter(show_in_catalog=True).count(),
         "variant_count": variants.count(),
         "stock_units": variants.aggregate(value=Coalesce(Sum("stock"), 0))["value"],
-        "inventory_value": variants.aggregate(value=Coalesce(Sum(inventory_value_expr), Decimal("0"), output_field=DecimalField()))["value"],
+        "inventory_value": inventory_value,
         "pending_orders": Order.objects.filter(status=Order.Status.PENDING_PAYMENT).count(),
         "sales_30d": sales_30d,
         "low_stock": variants.filter(stock__lte=F("low_stock_threshold")).select_related("product").order_by("stock", "product__name")[:10],
@@ -95,6 +97,17 @@ def product_edit(request, pk):
 def locations(request):
     queryset = StoreLocation.objects.order_by("-is_shipping_origin", "-pickup_enabled", "name")
     return render(request, "store/owner/locations.html", {"locations": queryset})
+
+
+@owner_required
+def promotions(request):
+    settings_obj = StoreSettings.get_solo()
+    form = OwnerStoreSettingsForm(request.POST or None, instance=settings_obj)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Promoción global guardada.")
+        return redirect("store:owner_promotions")
+    return render(request, "store/owner/promotions.html", {"form": form, "settings_obj": settings_obj})
 
 
 def _location_form(request, instance=None):

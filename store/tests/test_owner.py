@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from store.models import InventoryAdjustment, Product, StoreLocation, Variant
+from store.models import InventoryAdjustment, Product, StoreLocation, StoreSettings, Variant
 
 
 class OwnerInterfaceTests(TestCase):
@@ -61,6 +61,22 @@ class OwnerInterfaceTests(TestCase):
         movement = InventoryAdjustment.objects.get(reference="RECEPCION-TEST")
         self.assertEqual(movement.delta, 6)
         self.assertEqual(movement.created_by, self.owner)
+
+    def test_effective_price_uses_best_discount_without_stacking(self):
+        self.product.discount_percent = Decimal("10")
+        self.product.save(update_fields=["discount_percent", "updated_at"])
+        self.variant.price = Decimal("1000")
+        self.variant.sale_price = Decimal("850")
+        self.variant.save(update_fields=["price", "sale_price", "updated_at"])
+        settings_obj = StoreSettings.get_solo()
+        settings_obj.promotion_active = True
+        settings_obj.global_discount_percent = Decimal("20")
+        settings_obj.save()
+        self.assertEqual(self.variant.current_price, Decimal("800.00"))
+
+        settings_obj.promotion_active = False
+        settings_obj.save()
+        self.assertEqual(self.variant.current_price, Decimal("850"))
 
     def test_owner_can_manage_pickup_location_with_full_address(self):
         self.client.force_login(self.owner)

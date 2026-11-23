@@ -1,0 +1,14 @@
+{% extends 'store/owner/base.html' %}
+{% block title %}Precios y promociones{% endblock %}
+{% block heading %}Precios y promociones{% endblock %}
+{% block content %}
+<section class="owner-form-narrow">
+  <div class="owner-notice"><div><strong>Una sola promoción efectiva</strong><p>Los descuentos no se acumulan. Para cada variante se cobra el menor importe entre su precio de oferta, el descuento del producto y esta promoción global.</p></div></div>
+  <form method="post" class="owner-card owner-form">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}<div class="field">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}
+    <div class="owner-form-actions"><button class="button primary">Guardar promoción global</button></div>
+  </form>
+  <div class="owner-notice"><div><strong>Descuento por producto</strong><p>Se edita dentro de Productos → Editar. El precio normal y el precio de oferta de cada variante se editan en Productos → Variantes → Editar.</p></div><a href="{% url 'store:owner_products' %}">Ir a productos</a></div>
+</section>
+{% endblock %}

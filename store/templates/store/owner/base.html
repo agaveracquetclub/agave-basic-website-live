@@ -21,6 +21,7 @@
       <a class="{% if request.resolver_match.url_name == 'owner_orders' %}active{% endif %}" href="{% url 'store:owner_orders' %}">Pedidos</a>
       <a href="{% url 'store:external_sale' %}">Venta externa</a>
       <a class="{% if 'owner_location' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'store:owner_locations' %}">Ubicaciones</a>
+      <a class="{% if request.resolver_match.url_name == 'owner_promotions' %}active{% endif %}" href="{% url 'store:owner_promotions' %}">Precios y promociones</a>
       <a href="{% url 'admin:index' %}">Administración avanzada</a>
     </nav>
     <div class="owner-sidebar-bottom">
